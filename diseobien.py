@@ -291,6 +291,12 @@ def tcc(Vat, Iat, N, DifN, diame, canal, long_ax, freq):
     return round(vcc,3)
 
 def calentamiento(Perd_cu, Perd_nuc, N_cap, aisl_cap, diame, tipo_cond, long_ax, D_nuc_circ):
+    """Calcula parámetros térmicos y dimensiones del tanque.
+
+    Devuelve la longitud de aletas necesaria, las dimensiones del
+    tanque (largo y ancho), el área de radiación, el área desarrollada
+    de convección, el número de aletas y una lista de temperaturas.
+    """
     temp=30 # temperatura ambiente.
     Ptot=Perd_nuc+sum(Perd_cu)
     Dmed=(diame[3]+diame[2])/2
@@ -327,15 +333,15 @@ def calentamiento(Perd_cu, Perd_nuc, N_cap, aisl_cap, diame, tipo_cond, long_ax,
     Coef2=-0.0028*cal2**2+0.1613*cal2+3.0412
     Coef_calt=(Coef1+Coef2)*cal2
     for i in range(100000):
-        L_aletas=0.25*i/100000 # hasta 25 centimetros como amximo
-        A_ext=Alt_t*(2*Largo_t+2*Ancho_t+4*ma.sqrt(L_aletas**2+L_aletas**2))
-        A_des=Alt_t*(2*Largo_t+2*Ancho_t+N_aletas*L_aletas*2)
-        P_A2=Ptot/(A_ext+A_des)
-        if abs(P_A2-Coef_calt)<1: # se halla la longitud de aletas que permite cumplir con esta igualdad igual que en (0)
+        L_aletas = 0.25 * i / 100000  # hasta 25 cm como máximo
+        A_ext = Alt_t * (2 * Largo_t + 2 * Ancho_t + 4 * ma.sqrt(L_aletas**2 + L_aletas**2))
+        A_des = Alt_t * (2 * Largo_t + 2 * Ancho_t + N_aletas * L_aletas * 2)
+        P_A2 = Ptot / (A_ext + A_des)
+        if abs(P_A2 - Coef_calt) < 1:
             break
-    if (i==100000-1):
+    if i == 100000 - 1:
         print("La longitud de las letas sale por encima de 25 centimetros, debes de corregir tu diseño")
-    return L_aletas, Largo_t, Ancho_t, A_ext, A_des, [Tmax, T2, T3, temp]
+    return L_aletas, Largo_t, Ancho_t, A_ext, A_des, N_aletas, [Tmax, T2, T3, temp]
 
 # ================================ BLOQUE PRINCIPAL =============================
 # ESTO ES LO QUE USTED TIENE QUE CAMBIAR, ESTA BIEN QUE PREGUNTE, PERO NO EXAGERE
@@ -377,8 +383,10 @@ diame, pesoCU = Calc_diam_peso_CU(D_nuc_circ_aisl, espesor_ext, N_cap, aisl_cap,
 peso_nuc = peso_fe(Alt_col, Vat, diame, Sfe, dens_fe)
 Perd_nuc = Perd_fierro(f, B, peso_nuc)
 Perd_cu = Perd_cobre(pesoCU, densi_I)
-vcc=tcc(Vat, Iat, N, DifN, diame, Canal, long_ax, f)
-L_aletas, Largo_t, Ancho_t, A_ext, A_des, temperaturas=calentamiento(Perd_cu, Perd_nuc, N_cap, aisl_cap, diame, tipo_cond, long_ax, D_nuc_circ)
+vcc = tcc(Vat, Iat, N, DifN, diame, Canal, long_ax, f)
+L_aletas, Largo_t, Ancho_t, A_ext, A_des, N_aletas, temperaturas = calentamiento(
+    Perd_cu, Perd_nuc, N_cap, aisl_cap, diame, tipo_cond, long_ax, D_nuc_circ
+)
 
 borrar()
 # SALIDA DE DATOS - NUCLEO
@@ -442,6 +450,7 @@ escribir_en_txt(impri_tcc)
 # SALIDA DE DATOS - TEMPERATURA
 sal_temp=[]
 sal_temp.append([L_aletas, "Longitu de aletas (MENOR A 25cm  o 0.25m)"])
+sal_temp.append([N_aletas, "Numero de aletas"])
 sal_temp.append([Largo_t, "Longitud del transformador en metros (sin contar aletas)"])
 sal_temp.append([Ancho_t, "Ancho del transformador en metros (sin contar aletas)"])
 sal_temp.append([A_ext, "Area externa de radiacion en m2"])
@@ -451,9 +460,6 @@ sal_temp.append([temperaturas, "temperatruas °C en el transformador [bob AT, en
 
 encabezados_temp = ["DATOS DEL TANQUE (refrigeracion)", "Descripcion"]
 tabla_fmt_temp = [[formatear_celda(celda) for celda in fila] for fila in sal_temp]
-impri_temp=tabulate(tabla_fmt_temp, headers=encabezados_temp, tablefmt="grid")
+impri_temp = tabulate(tabla_fmt_temp, headers=encabezados_temp, tablefmt="grid")
 #print(impri_bob)
 escribir_en_txt(impri_temp)
-calentamiento(Perd_cu, Perd_nuc, N_cap, aisl_cap, diame, tipo_cond, long_ax, D_nuc_circ)
-    # except Exception as e:
-    #     print(f"Error durante la ejecución del programa: {e}")
