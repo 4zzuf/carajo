@@ -113,13 +113,15 @@ def escalones(esc1):
         raise ValueError("Índice de escalones fuera de rango (1-6)")
 
 def tensiones(Snom, Vnom, Grup):
+    """Calcula tensiones e intensidades por devanado."""
     try:
-        if Grup == "Dy":
-            Vbt = Vnom[1]/ma.sqrt(3)
+        # Se acepta especificar el grupo completo, por ejemplo "Dyn5" o "Yd11".
+        if Grup.startswith("Dy"):
+            Vbt = Vnom[1] / ma.sqrt(3)
             Vat0 = Vnom[0] * (1 - tap)
             Vat1 = Vnom[0]
             Vat2 = Vnom[0] * (1 + tap)
-        elif Grup == "Yd":
+        elif Grup.startswith("Yd"):
             Vbt = Vnom[1]
             Vat0 = Vnom[0] * (1 - tap) / ma.sqrt(3)
             Vat1 = Vnom[0] / ma.sqrt(3)
@@ -341,10 +343,10 @@ def calentamiento(Perd_cu, Perd_nuc, N_cap, aisl_cap, diame, tipo_cond, long_ax,
 # if __name__ == "__main__":
 #     try:
         # DATOS DE ENTRADA
-Snom = 640*1000 / 3 # Monofasica en VA
-Vnom = [10000, 230] # tensiones en voltios
-Grupo = "Dy" # o Yd
-tap = 0.05 # +/- taps de AT
+Snom = 100 * 1000 / 3  # potencia monofásica en VA
+Vnom = [10000, 230]  # tensiones en voltios
+Grupo = "Dyn5"  # grupo de conexión
+tap = 0.05  # +/- 5 % de TAP
 f = 60
 
 # CONSTANTES
