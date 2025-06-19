@@ -382,137 +382,136 @@ def calentamiento(
 # ================================ BLOQUE PRINCIPAL =============================
 # ESTO ES LO QUE USTED TIENE QUE CAMBIAR, ESTA BIEN QUE PREGUNTE, PERO NO EXAGERE
 
-# if __name__ == "__main__":
-#     try:
-        # DATOS DE ENTRADA
-Snom = 100 * 1000 / 3  # potencia monofásica en VA
-Vnom = [10000, 230]  # tensiones en voltios
-Grupo = "Dyn5"  # grupo de conexión
-tap = 0.05  # +/- 5 % de TAP
-f = 60
+if __name__ == "__main__":
+    # DATOS DE ENTRADA
+    Snom = 100 * 1000 / 3  # potencia monofásica en VA
+    Vnom = [10000, 230]  # tensiones en voltios
+    Grupo = "Dyn5"  # grupo de conexión
+    tap = 0.05  # +/- 5 % de TAP
+    f = 60
 
 # CONSTANTES
-fa = 0.95 # factor de apilamiento
-dens_cu = 8.9 * 1000
-dens_fe = 7.85 * 1000
-B = 1.6
-Canal = 13 / 1000 # de dispersión
+    fa = 0.95 # factor de apilamiento
+    dens_cu = 8.9 * 1000
+    dens_fe = 7.85 * 1000
+    B = 1.6
+    Canal = 13 / 1000 # de dispersión
 
 # VARIABLES
-Sfe = 330 / 10000 # sección útil de nucleo 
-esc = 5 # cantidad de escalones
-N_cap = [7, 1] # cantidad de capas [AT, BT]
-plet_alam = [0, 1] # 0 para alambre, 1 para pletina # [AT, BT]
-# tipo_cond = [9, [3, 12.5]] # para la pletina= [espesor(menor), ancho(mayor)]
-tipo_cond = [9, [3, 13.5]] # para la pletina= [espesor(menor), ancho(mayor)]
-junt_sup = [[1, 1], [2, 6]]
+    Sfe = 330 / 10000 # sección útil de nucleo
+    esc = 5 # cantidad de escalones
+    N_cap = [7, 1] # cantidad de capas [AT, BT]
+    plet_alam = [0, 1] # 0 para alambre, 1 para pletina # [AT, BT]
+    # tipo_cond = [9, [3, 12.5]] # para la pletina= [espesor(menor), ancho(mayor)]
+    tipo_cond = [9, [3, 13.5]] # para la pletina= [espesor(menor), ancho(mayor)]
+    junt_sup = [[1, 1], [2, 6]]
 
 
 # CÁLCULOS
-Vbt, Vat, Ibt, Iat = tensiones(Snom, Vnom, Grupo)
-area, densi_I, ancho_ext, espesor_ext = analisis_cond(plet_alam, tipo_cond, junt_sup, Ibt, Iat)
-S_nuc_circ, D_nuc_circ, D_nuc_circ_aisl = nucleo(Sfe, esc, fa)
-N, DifN, Res_N, N_espxcap, Res_espxcap = Espiras_capas(Sfe, B, f, Vbt, Vat, N_cap)
-aisl_cap = aisl_entrecapas(tipo_cond, Vat, Vbt, N_cap)# despues del vidceo hice un cambio aqui, era al doble de tnesion
-long_ax, Alt_col = Longitud_axial(N_espxcap, ancho_ext, Vat, Vbt)
-diame, pesoCU = Calc_diam_peso_CU(D_nuc_circ_aisl, espesor_ext, N_cap, aisl_cap, area, N, dens_cu, Canal)
-peso_nuc = peso_fe(Alt_col, Vat, diame, Sfe, dens_fe)
-Perd_nuc = Perd_fierro(f, B, peso_nuc)
-Perd_cu = Perd_cobre(pesoCU, densi_I)
-vcc = tcc(Vat, Iat, N, DifN, diame, Canal, long_ax, f)
+    Vbt, Vat, Ibt, Iat = tensiones(Snom, Vnom, Grupo)
+    area, densi_I, ancho_ext, espesor_ext = analisis_cond(plet_alam, tipo_cond, junt_sup, Ibt, Iat)
+    S_nuc_circ, D_nuc_circ, D_nuc_circ_aisl = nucleo(Sfe, esc, fa)
+    N, DifN, Res_N, N_espxcap, Res_espxcap = Espiras_capas(Sfe, B, f, Vbt, Vat, N_cap)
+    aisl_cap = aisl_entrecapas(tipo_cond, Vat, Vbt, N_cap)  # despues del video hice un cambio aqui, era al doble de tension
+    long_ax, Alt_col = Longitud_axial(N_espxcap, ancho_ext, Vat, Vbt)
+    diame, pesoCU = Calc_diam_peso_CU(D_nuc_circ_aisl, espesor_ext, N_cap, aisl_cap, area, N, dens_cu, Canal)
+    peso_nuc = peso_fe(Alt_col, Vat, diame, Sfe, dens_fe)
+    Perd_nuc = Perd_fierro(f, B, peso_nuc)
+    Perd_cu = Perd_cobre(pesoCU, densi_I)
+    vcc = tcc(Vat, Iat, N, DifN, diame, Canal, long_ax, f)
 # Dimensiones propuestas del tanque (m)
-Alt_t_usr = 0.5
-Largo_t_usr = 1.0
-Ancho_t_usr = 0.4
-L_aletas, Largo_t, Ancho_t, A_ext, A_des, N_aletas, temperaturas, ok = calentamiento(
-    Perd_cu,
-    Perd_nuc,
-    N_cap,
-    aisl_cap,
-    diame,
-    tipo_cond,
-    long_ax,
-    D_nuc_circ,
-    Alt_t=Alt_t_usr,
-    Largo_t=Largo_t_usr,
-    Ancho_t=Ancho_t_usr,
-)
+    Alt_t_usr = 0.25
+    Largo_t_usr = 0.25
+    Ancho_t_usr = 0.25
+    L_aletas, Largo_t, Ancho_t, A_ext, A_des, N_aletas, temperaturas, ok = calentamiento(
+        Perd_cu,
+        Perd_nuc,
+        N_cap,
+        aisl_cap,
+        diame,
+        tipo_cond,
+        long_ax,
+        D_nuc_circ,
+        Alt_t=Alt_t_usr,
+        Largo_t=Largo_t_usr,
+        Ancho_t=Ancho_t_usr,
+    )
 
-if not ok:
-    print("Diseño térmico no cumplido con las dimensiones propuestas")
+    if not ok:
+        print("Diseño térmico no cumplido con las dimensiones propuestas")
 
-borrar()
-# SALIDA DE DATOS - NUCLEO
-sal_nuc=[]
-sal_nuc.append([Sfe*10000, "Valor ingresado de seccion de núcleo en cm2"])
-sal_nuc.append([S_nuc_circ*10000, "sección de circunferencia cincundate al nucleo" ])
-sal_nuc.append([D_nuc_circ*100, "Diametro de la circunferencia circundante al nucleo en cm"])
-sal_nuc.append([Alt_col, "Altura de columna del núcleo en m, AMBOS VALORES DEBEN SER IGUALES"])
-sal_nuc.append([peso_nuc, "Peso del nucleo en Kg"])
-sal_nuc.append([Perd_nuc, "Pérdias en el nucleo en Watts a tensión nominal"])
-encabezados_nuc = ["NUCLEO FERROMAGNETICO", "Descripcion"]
-tabla_fmt_nuc = [[formatear_celda(celda) for celda in fila] for fila in sal_nuc]
-impri_nuc=tabulate(tabla_fmt_nuc, headers=encabezados_nuc, tablefmt="grid")
-#print(impri_nuc)
-escribir_en_txt(impri_nuc)
-
-
-# SALIDA DE DATOS - BOBINA
-sal_bob=[]
-sal_bob.append([N, "Espiras eléctricas por devanado"])
-sal_bob.append([[N[0]+2, N[1]+2], "Espiras mecánicas por devanado"])
-sal_bob.append([Res_N, "Residuo de cantidad de espiras totales, deberia ser mucho menor a 0.5"])
-sal_bob.append([DifN, "Diferencia de primer y ultimo tap en devanado de AT MENOR QUE ESPIRAS POR CAPA"])
-sal_bob.append([N_cap, "Numero de capas definido por el usuario"])
-sal_bob.append([Res_espxcap, "Residuo de cantidad de espiras por capa, deberia ser meno al 5% de la cantidad de espirtas por capa solo en AT"])
-sal_bob.append([plet_alam, "tipo de condcutor, 0 para alambre y 1 para pletina"])
-sal_bob.append([tipo_cond, "numero AWG para alambres y [espesor,ancho] para pletina"])
-sal_bob.append([junt_sup, "Configurtaciond e juntas y superpuestas"])
-sal_bob.append([[espesor_ext[0]*1000, espesor_ext[1]*1000], "Grosor de los conductores totales en mm"])
-sal_bob.append([[ancho_ext[0]*1000, ancho_ext[1]*1000], "Largo de los conductores totales en mm"])
-sal_bob.append([[area[0]*1000000, area[1]*1000000], "Sección transversal de los conductores totales en mm2"])
-sal_bob.append([N_espxcap, "Numero de espiras mecánicas por capa"])
-sal_bob.append([long_ax, "Altura de cada bobina en metros"])
-sal_bob.append([densi_I, "Densidad de corriente A/mm2 LAS 2 ENTRE 3 Y 3.5"])
-sal_bob.append([[aisl_cap[0]*1000, aisl_cap[1]*1000], "Aislamiento entre capas en mm"])
-sal_bob.append([Canal*1000, "Canal de dispersión en mm"])
-sal_bob.append([[diame[2]*100, diame[0]*100], "Diametros internos en centimetros"])
-sal_bob.append([[diame[3]*100, diame[1]*100], "Diametros externos en centimetros"])
-sal_bob.append([[pesoCU[0], pesoCU[1]], "Pesos por bobina  bobinas en Kg"])
-sal_bob.append([Perd_cu, "Perdidas en el cobre (par alas 3 bobinas) a plena carga"])
-
-encabezados_bob = ["BOBINA AT / BOBINA BT", "Descripcion"]
-tabla_fmt_bob = [[formatear_celda(celda) for celda in fila] for fila in sal_bob]
-impri_bob=tabulate(tabla_fmt_bob, headers=encabezados_bob, tablefmt="grid")
-#print(impri_bob)
-escribir_en_txt(impri_bob)
-
-# SALIDA DE DATOS - TENSIÓN DE CORTOCIRCUITO
-sal_tcc=[]
-sal_tcc.append([vcc, "%"])
-
-
-encabezados_tcc = ["TENSIÓN de CC", "Descripcion"]
-tabla_fmt_tcc = [[formatear_celda(celda) for celda in fila] for fila in sal_tcc]
-impri_tcc=tabulate(tabla_fmt_tcc, headers=encabezados_tcc, tablefmt="grid")
-#print(impri_bob)
-escribir_en_txt(impri_tcc)
-    # except Exception as e:
-    #     print(f"Error durante la ejecución del programa: {e}")
-
-# SALIDA DE DATOS - TEMPERATURA
-sal_temp=[]
-sal_temp.append([L_aletas, "Longitu de aletas (MENOR A 25cm  o 0.25m)"])
-sal_temp.append([N_aletas, "Numero de aletas"])
-sal_temp.append([Largo_t, "Longitud del transformador en metros (sin contar aletas)"])
-sal_temp.append([Ancho_t, "Ancho del transformador en metros (sin contar aletas)"])
-sal_temp.append([A_ext, "Area externa de radiacion en m2"])
-sal_temp.append([A_des, "Area desarrollada de conveccion en m2"])
-sal_temp.append([temperaturas, "temperatruas °C en el transformador [bob AT, en la superficie de PA, en el tanque, en el exterior(Tamb) ]"])
-
-
-encabezados_temp = ["DATOS DEL TANQUE (refrigeracion)", "Descripcion"]
-tabla_fmt_temp = [[formatear_celda(celda) for celda in fila] for fila in sal_temp]
-impri_temp = tabulate(tabla_fmt_temp, headers=encabezados_temp, tablefmt="grid")
-#print(impri_bob)
-escribir_en_txt(impri_temp)
+    borrar()
+    # SALIDA DE DATOS - NUCLEO
+    sal_nuc=[]
+    sal_nuc.append([Sfe*10000, "Valor ingresado de seccion de núcleo en cm2"])
+    sal_nuc.append([S_nuc_circ*10000, "sección de circunferencia cincundate al nucleo" ])
+    sal_nuc.append([D_nuc_circ*100, "Diametro de la circunferencia circundante al nucleo en cm"])
+    sal_nuc.append([Alt_col, "Altura de columna del núcleo en m, AMBOS VALORES DEBEN SER IGUALES"])
+    sal_nuc.append([peso_nuc, "Peso del nucleo en Kg"])
+    sal_nuc.append([Perd_nuc, "Pérdias en el nucleo en Watts a tensión nominal"])
+    encabezados_nuc = ["NUCLEO FERROMAGNETICO", "Descripcion"]
+    tabla_fmt_nuc = [[formatear_celda(celda) for celda in fila] for fila in sal_nuc]
+    impri_nuc=tabulate(tabla_fmt_nuc, headers=encabezados_nuc, tablefmt="grid")
+    #print(impri_nuc)
+    escribir_en_txt(impri_nuc)
+    
+    
+    # SALIDA DE DATOS - BOBINA
+    sal_bob=[]
+    sal_bob.append([N, "Espiras eléctricas por devanado"])
+    sal_bob.append([[N[0]+2, N[1]+2], "Espiras mecánicas por devanado"])
+    sal_bob.append([Res_N, "Residuo de cantidad de espiras totales, deberia ser mucho menor a 0.5"])
+    sal_bob.append([DifN, "Diferencia de primer y ultimo tap en devanado de AT MENOR QUE ESPIRAS POR CAPA"])
+    sal_bob.append([N_cap, "Numero de capas definido por el usuario"])
+    sal_bob.append([Res_espxcap, "Residuo de cantidad de espiras por capa, deberia ser meno al 5% de la cantidad de espirtas por capa solo en AT"])
+    sal_bob.append([plet_alam, "tipo de condcutor, 0 para alambre y 1 para pletina"])
+    sal_bob.append([tipo_cond, "numero AWG para alambres y [espesor,ancho] para pletina"])
+    sal_bob.append([junt_sup, "Configurtaciond e juntas y superpuestas"])
+    sal_bob.append([[espesor_ext[0]*1000, espesor_ext[1]*1000], "Grosor de los conductores totales en mm"])
+    sal_bob.append([[ancho_ext[0]*1000, ancho_ext[1]*1000], "Largo de los conductores totales en mm"])
+    sal_bob.append([[area[0]*1000000, area[1]*1000000], "Sección transversal de los conductores totales en mm2"])
+    sal_bob.append([N_espxcap, "Numero de espiras mecánicas por capa"])
+    sal_bob.append([long_ax, "Altura de cada bobina en metros"])
+    sal_bob.append([densi_I, "Densidad de corriente A/mm2 LAS 2 ENTRE 3 Y 3.5"])
+    sal_bob.append([[aisl_cap[0]*1000, aisl_cap[1]*1000], "Aislamiento entre capas en mm"])
+    sal_bob.append([Canal*1000, "Canal de dispersión en mm"])
+    sal_bob.append([[diame[2]*100, diame[0]*100], "Diametros internos en centimetros"])
+    sal_bob.append([[diame[3]*100, diame[1]*100], "Diametros externos en centimetros"])
+    sal_bob.append([[pesoCU[0], pesoCU[1]], "Pesos por bobina  bobinas en Kg"])
+    sal_bob.append([Perd_cu, "Perdidas en el cobre (par alas 3 bobinas) a plena carga"])
+    
+    encabezados_bob = ["BOBINA AT / BOBINA BT", "Descripcion"]
+    tabla_fmt_bob = [[formatear_celda(celda) for celda in fila] for fila in sal_bob]
+    impri_bob=tabulate(tabla_fmt_bob, headers=encabezados_bob, tablefmt="grid")
+    #print(impri_bob)
+    escribir_en_txt(impri_bob)
+    
+    # SALIDA DE DATOS - TENSIÓN DE CORTOCIRCUITO
+    sal_tcc=[]
+    sal_tcc.append([vcc, "%"])
+    
+    
+    encabezados_tcc = ["TENSIÓN de CC", "Descripcion"]
+    tabla_fmt_tcc = [[formatear_celda(celda) for celda in fila] for fila in sal_tcc]
+    impri_tcc=tabulate(tabla_fmt_tcc, headers=encabezados_tcc, tablefmt="grid")
+    #print(impri_bob)
+    escribir_en_txt(impri_tcc)
+        # except Exception as e:
+        #     print(f"Error durante la ejecución del programa: {e}")
+    
+    # SALIDA DE DATOS - TEMPERATURA
+    sal_temp=[]
+    sal_temp.append([L_aletas, "Longitu de aletas (MENOR A 25cm  o 0.25m)"])
+    sal_temp.append([N_aletas, "Numero de aletas"])
+    sal_temp.append([Largo_t, "Longitud del transformador en metros (sin contar aletas)"])
+    sal_temp.append([Ancho_t, "Ancho del transformador en metros (sin contar aletas)"])
+    sal_temp.append([A_ext, "Area externa de radiacion en m2"])
+    sal_temp.append([A_des, "Area desarrollada de conveccion en m2"])
+    sal_temp.append([temperaturas, "temperatruas °C en el transformador [bob AT, en la superficie de PA, en el tanque, en el exterior(Tamb) ]"])
+    
+    
+    encabezados_temp = ["DATOS DEL TANQUE (refrigeracion)", "Descripcion"]
+    tabla_fmt_temp = [[formatear_celda(celda) for celda in fila] for fila in sal_temp]
+    impri_temp = tabulate(tabla_fmt_temp, headers=encabezados_temp, tablefmt="grid")
+    #print(impri_bob)
+    escribir_en_txt(impri_temp)
