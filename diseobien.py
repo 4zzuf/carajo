@@ -349,38 +349,23 @@ def calentamiento(
         Largo_t = largo_def
     if Ancho_t is None:
         Ancho_t = ancho_def
-    N_aletas = 2 * (int(Largo_t / 0.05) + 1) + 2 * (int(Ancho_t / 0.05) + 1)
-    cal2 = T3 - temp
-    Coef1 = 0.0288 * cal2 + 5.281
-    Coef2 = -0.0028 * cal2 ** 2 + 0.1613 * cal2 + 3.0412
-    Coef_calt = (Coef1 + Coef2) * cal2
+    N_aletas=2*(round(Largo_t/0.050-0.4999,0)+1)+2*(round(Ancho_t/0.050-0.4999,0)+1) # cantidad de aletas
+    cal2=T3-temp
+    Coef1=0.0288*cal2+5.281
+    Coef2=-0.0028*cal2**2+0.1613*cal2+3.0412
+    Coef_calt=(Coef1+Coef2)*cal2
+    for i in range(100000):
+        L_aletas = 0.25 * i / 100000  # hasta 25 cm como máximo
+        A_ext = Alt_t * (2 * Largo_t + 2 * Ancho_t + 4 * ma.sqrt(L_aletas**2 + L_aletas**2))
+        A_des = Alt_t * (2 * Largo_t + 2 * Ancho_t + N_aletas * L_aletas * 2)
+        P_A2 = Ptot / (A_ext + A_des)
+        if abs(P_A2 - Coef_calt) < 1:
+            break
 
-    # Ajusta las dimensiones del tanque si no se consigue una longitud de aleta
-    # menor a 25 cm con los valores proporcionados.
-    success = False
-    intentos = 0
-    while not success and intentos < 10:
-        for i in range(100000):
-            L_aletas = 0.25 * i / 100000  # hasta 25 cm como máximo
-            A_ext = Alt_t * (
-                2 * Largo_t + 2 * Ancho_t + 4 * ma.sqrt(L_aletas ** 2 + L_aletas ** 2)
-            )
-            A_des = Alt_t * (
-                2 * Largo_t + 2 * Ancho_t + N_aletas * L_aletas * 2
-            )
-            P_A2 = Ptot / (A_ext + A_des)
-            if abs(P_A2 - Coef_calt) < 1:
-                success = True
-                break
-        if not success:
-            Largo_t += 0.05
-            Ancho_t += 0.05
-            N_aletas = 2 * (int(Largo_t / 0.05) + 1) + 2 * (int(Ancho_t / 0.05) + 1)
-            intentos += 1
-
+    success = i != 100000 - 1
     if not success:
         print(
-            "La longitud de las aletas excede 25 centimetros incluso aumentando las dimensiones"
+            "La longitud de las letas sale por encima de 25 centimetros, debes de corregir tu diseño"
         )
 
     return (
@@ -411,15 +396,15 @@ fa = 0.95 # factor de apilamiento
 dens_cu = 8.9 * 1000
 dens_fe = 7.85 * 1000
 B = 1.6
-Canal = 11 / 1000 # de dispersión (valor fijo solicitado)
+Canal = 11 / 1000 # de dispersión
 
 # VARIABLES
-Sfe = 135 / 10000  # sección útil de núcleo (135 cm²)
-esc = 6  # cantidad de escalones
-N_cap = [8, 1]  # capas AT / BT
-plet_alam = [0, 1]  # 0 para alambre en AT y 1 para pletina en BT
-tipo_cond = [22, [3, 16.0]]  # AWG 22 para AT, pletina 3×16 mm para BT
-junt_sup = [[1, 3.5], [1, 1.5]]  # juntas y superpuestas AT / BT
+Sfe = 135 / 10000     # 135 cm²
+esc = 6               # 6 escalones
+N_cap = [8, 1]        # 8 capas AT, 1 capa BT
+plet_alam = [0, 1]    # Alambre AT, pletina BT
+tipo_cond = [22, [3, 16.0]]   # AWG 22, pletina 3×16
+junt_sup = [[1, 3.5], [1, 1.5]]   # 4 AT, 3 BT
 
 
 # CÁLCULOS
@@ -516,13 +501,13 @@ escribir_en_txt(impri_tcc)
 
 # SALIDA DE DATOS - TEMPERATURA
 sal_temp=[]
-sal_temp.append([L_aletas, "Longitud de aletas (MENOR A 25cm  o 0.25m)"])
+sal_temp.append([L_aletas, "Longitu de aletas (MENOR A 25cm  o 0.25m)"])
 sal_temp.append([N_aletas, "Numero de aletas"])
 sal_temp.append([Largo_t, "Longitud del transformador en metros (sin contar aletas)"])
 sal_temp.append([Ancho_t, "Ancho del transformador en metros (sin contar aletas)"])
 sal_temp.append([A_ext, "Area externa de radiacion en m2"])
 sal_temp.append([A_des, "Area desarrollada de conveccion en m2"])
-sal_temp.append([temperaturas, "temperaturas °C en el transformador [bob AT, en la superficie de PA, en el tanque, en el exterior (Tamb)]"])
+sal_temp.append([temperaturas, "temperatruas °C en el transformador [bob AT, en la superficie de PA, en el tanque, en el exterior(Tamb) ]"])
 
 
 encabezados_temp = ["DATOS DEL TANQUE (refrigeracion)", "Descripcion"]
