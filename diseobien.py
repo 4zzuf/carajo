@@ -420,9 +420,9 @@ Perd_nuc = Perd_fierro(f, B, peso_nuc)
 Perd_cu = Perd_cobre(pesoCU, densi_I)
 vcc = tcc(Vat, Iat, N, DifN, diame, Canal, long_ax, f)
 # Dimensiones propuestas del tanque (m)
-Alt_t_usr = 0.5
-Largo_t_usr = 1.0
-Ancho_t_usr = 0.4
+Alt_t_usr = 0.6
+Largo_t_usr = 0.7
+Ancho_t_usr = 0.6
 L_aletas, Largo_t, Ancho_t, A_ext, A_des, N_aletas, temperaturas, ok = calentamiento(
     Perd_cu,
     Perd_nuc,
