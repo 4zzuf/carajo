@@ -396,16 +396,15 @@ fa = 0.95 # factor de apilamiento
 dens_cu = 8.9 * 1000
 dens_fe = 7.85 * 1000
 B = 1.6
-Canal = 13 / 1000 # de dispersión
+Canal = 11 / 1000 # de dispersión
 
 # VARIABLES
-Sfe = 330 / 10000 # sección útil de nucleo 
-esc = 5 # cantidad de escalones
-N_cap = [7, 1] # cantidad de capas [AT, BT]
-plet_alam = [0, 1] # 0 para alambre, 1 para pletina # [AT, BT]
-# tipo_cond = [9, [3, 12.5]] # para la pletina= [espesor(menor), ancho(mayor)]
-tipo_cond = [9, [3, 13.5]] # para la pletina= [espesor(menor), ancho(mayor)]
-junt_sup = [[1, 1], [2, 6]]
+Sfe = 135 / 10000     # 135 cm²
+esc = 6               # 6 escalones
+N_cap = [8, 1]        # 8 capas AT, 1 capa BT
+plet_alam = [0, 1]    # Alambre AT, pletina BT
+tipo_cond = [22, [3, 16.0]]   # AWG 22, pletina 3×16
+junt_sup = [[1, 3.5], [1, 1.5]]   # 4 AT, 3 BT
 
 
 # CÁLCULOS
